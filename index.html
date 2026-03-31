@@ -11,7 +11,7 @@
 <body>
 
 <a-scene
-  mindar-image="imageTargetSrc: targets.mind"
+  mindar-image="imageTargetSrc: targets.mind; autoStart: false"
   embedded
   vr-mode-ui="enabled: false"
   style="position: fixed; top:0; left:0;"
@@ -22,15 +22,58 @@
   <a-entity mindar-image-target="targetIndex: 0">
 
     <a-image 
-      src="catfish1.png"
+      src="test.png"
       position="0 0 0"
-      width="1"
-      height="1">
+      width="2"
+      height="2">
     </a-image>
 
   </a-entity>
 
 </a-scene>
+
+<!-- これが超重要 -->
+<div id="start" style="
+  position: fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:24px;
+  z-index:9999;
+">
+  画面をタップ
+</div>
+
+<script>
+document.getElementById("start").addEventListener("click", async () => {
+
+  const scene = document.querySelector("a-scene");
+
+  // scene準備待ち
+  if (!scene.hasLoaded) {
+    await new Promise(resolve => {
+      scene.addEventListener("loaded", resolve);
+    });
+  }
+
+  // mindar準備待ち
+  let mindar;
+  while (!mindar) {
+    mindar = scene.systems["mindar-image-system"];
+    await new Promise(r => setTimeout(r, 100));
+  }
+
+  await mindar.start();
+
+  document.getElementById("start").style.display = "none";
+
+});
+</script>
 
 </body>
 </html>
